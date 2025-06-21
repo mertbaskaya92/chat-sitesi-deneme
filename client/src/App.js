@@ -369,8 +369,9 @@ function App() {
   
   const getPartnerLabel = (info) => {
     if (!info) return 'Partner';
-    if (info.countryCode === 'XX') return info.countryName;
-    return `${countryCodeToFlag(info.countryCode)} ${info.countryName}`;
+    const name = info.countryName === 'Bilinmeyen' ? 'Yabancı' : info.countryName;
+    if (info.countryCode === 'XX' || !info.countryCode) return name;
+    return `${countryCodeToFlag(info.countryCode)} ${name}`;
   };
 
   return (
