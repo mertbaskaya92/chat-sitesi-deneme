@@ -425,8 +425,8 @@ function App() {
                       <h2>Eşleştirme Aranıyor...</h2>
                     </div>
                   ) : (
-                    messages.map((msg, index) => (
-                      <div key={index} className={`message-item ${msg.from}`}>
+                    messages.map((msg) => (
+                      <div key={msg.timestamp} className={`message-item ${msg.from}`}>
                         <div className="message-content">
                           <Twemoji text={msg.message} />
                           <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
