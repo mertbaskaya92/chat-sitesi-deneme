@@ -5,23 +5,25 @@ const cors = require('cors');
 require('dotenv').config();
 const geoip = require('geoip-lite');
 const countryList = require('country-list');
+const helmet = require('helmet');
 
 const app = express();
 const server = http.createServer(app);
 
-// Content Security Policy (CSP) Middleware'i ekle
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; " +
-    "script-src 'self' blob:; " + // socket.io için blob script'lerine izin ver
-    "style-src 'self' 'unsafe-inline'; " + // React'in inline stillerine izin ver
-    "font-src 'self' data:; " + // Yerel fontlara izin ver
-    "connect-src 'self' wss://chat-sitesi-deneme-backend.onrender.com; " + // Websocket bağlantısına izin ver
-    "img-src 'self' https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/ data:;" // Emoji resimlerine (CDN) izin ver
-  );
-  next();
-});
+// Güvenlik için Helmet middleware'ini kullan.
+// Bu, socket.io'nun, emoji resimlerinin ve inline stillerin çalışmasına izin veren
+// özel bir Content Security Policy (CSP) içerir.
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "blob:"],
+      "connect-src": ["'self'", "wss://chat-sitesi-deneme-backend.onrender.com", "https://chat-sitesi-deneme-backend.onrender.com"],
+      "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/"],
+      "style-src": ["'self'", "'unsafe-inline'"]
+    }
+  }
+}));
 
 const io = socketIo(server, {
   cors: {
