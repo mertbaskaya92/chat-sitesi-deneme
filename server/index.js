@@ -17,8 +17,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "blob:"],
-      "connect-src": ["'self'", "wss://chat-sitesi-deneme-backend.onrender.com", "https://chat-sitesi-deneme-backend.onrender.com"],
+      "script-src-elem": ["'self'", "blob:"],
+      "connect-src": ["'self'", "https://chat-sitesi-deneme.onrender.com", "wss://chat-sitesi-deneme.onrender.com"],
       "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/"],
       "style-src": ["'self'", "'unsafe-inline'"]
     }
