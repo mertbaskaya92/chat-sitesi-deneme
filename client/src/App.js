@@ -367,6 +367,12 @@ function App() {
     return String.fromCodePoint(...[...code.toUpperCase()].map(c => c.charCodeAt(0) - 65 + OFFSET));
   };
   
+  const getPartnerLabel = (info) => {
+    if (!info) return 'Partner';
+    if (info.countryCode === 'XX') return info.countryName;
+    return `${countryCodeToFlag(info.countryCode)} ${info.countryName}`;
+  };
+
   return (
     <div className={`App ${isShaking ? 'shake' : ''}`}>
       <header className="App-header">
@@ -393,7 +399,7 @@ function App() {
                 )}
                 {partner && (
                   <div className="video-label partner">
-                    {partnerInfo ? `${countryCodeToFlag(partnerInfo.countryCode)} ${partnerInfo.countryName}` : 'Partner'}
+                    {getPartnerLabel(partnerInfo)}
                   </div>
                 )}
                 {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
@@ -425,14 +431,10 @@ function App() {
                       <h2>Eşleştirme Aranıyor...</h2>
                     </div>
                   ) : (
-                    messages.map((msg) => (
+                    messages.filter(msg => msg.from !== 'system').map((msg) => (
                       <div key={msg.timestamp} className={`message-item ${msg.from}`}>
                         <div className="message-content">
-                          {msg.from === 'system' ? (
-                            <div className="message-text-inner">{msg.message}</div>
-                          ) : (
-                            <Twemoji text={msg.message} />
-                          )}
+                          <Twemoji text={msg.message} />
                           <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </div>
                       </div>

@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
 
   const userData = {
     countryCode: geo ? geo.country : 'XX', // XX bilinmeyenler için
-    countryName: geo ? countryList.getName(geo.country) : 'Bilinmeyen'
+    countryName: geo ? countryList.getName(geo.country) : 'Yabancı'
   };
   usersData.set(socket.id, userData);
 
@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
       activeConnections.set(socket.id, partnerId);
       activeConnections.set(partnerId, socket.id);
       
-      const partnerData = usersData.get(partnerId) || { countryCode: 'XX', countryName: 'Bilinmeyen' };
+      const partnerData = usersData.get(partnerId) || { countryCode: 'XX', countryName: 'Yabancı' };
 
       socket.emit('partnerFound', { partnerId, partnerInfo: partnerData, initiator: true });
       io.to(partnerId).emit('partnerFound', { partnerId: socket.id, partnerInfo: userData, initiator: false });
