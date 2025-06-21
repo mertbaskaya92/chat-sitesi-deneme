@@ -354,60 +354,62 @@ function App() {
         )}
 
         {partner && (
-          <>
+          <div className="session-view">
             <div className="video-area">
-              <div className="video-container local">
-                <video ref={localVideoRef} autoPlay muted playsInline className={isVideoBlurred ? 'video-blurred' : ''}></video>
-                <div className="video-label you">Siz</div>
-              </div>
               <div className="video-container remote">
-                <video ref={remoteVideoRef} autoPlay playsInline className={isRemoteVideoMuted ? 'remote-video-muted' : ''}></video>
+                <video ref={remoteVideoRef} autoPlay playsInline></video>
                 <div className="video-label partner">
                   {partnerInfo ? `${countryCodeToFlag(partnerInfo.countryCode)} ${partnerInfo.countryName}` : 'Partner'}
                 </div>
                 {isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
               </div>
+              <div className="video-container local">
+                <video ref={localVideoRef} autoPlay muted playsInline></video>
+                <div className="video-label you">Siz</div>
+              </div>
             </div>
 
-            <div className="chat-panel">
-              <div className="messages-list">
-                {messages.map((msg, index) => (
-                  <div key={index} className={`message-item ${msg.from}`}>
-                    <div className="message-content">
-                      <Twemoji text={msg.message} />
-                      <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            <div className="interaction-panel">
+              <div className="chat-panel">
+                <div className="messages-list">
+                  {messages.map((msg, index) => (
+                    <div key={index} className={`message-item ${msg.from}`}>
+                      <div className="message-content">
+                        <Twemoji text={msg.message} />
+                        <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      </div>
                     </div>
+                  ))}
+                </div>
+
+                {showEmojiPicker && (
+                  <div ref={emojiPickerRef} className="emoji-picker-container">
+                    <EmojiPicker onEmojiClick={onEmojiClick} autoFocusSearch={false} />
                   </div>
-                ))}
+                )}
+
+                <form onSubmit={sendMessage} className="message-form">
+                  <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="emoji-btn">😊</button>
+                  <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    placeholder="Mesajınızı yazın..."
+                    autoComplete="off"
+                  />
+                  <button type="submit" disabled={!messageInput.trim()}>Gönder</button>
+                </form>
               </div>
 
-              {showEmojiPicker && (
-                <div ref={emojiPickerRef} className="emoji-picker-container">
-                  <EmojiPicker onEmojiClick={onEmojiClick} autoFocusSearch={false} />
-                </div>
-              )}
-
-              <form onSubmit={sendMessage} className="message-form">
-                <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="emoji-btn">😊</button>
-                <input
-                  type="text"
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  placeholder="Mesajınızı yazın..."
-                  autoComplete="off"
-                />
-                <button type="submit" disabled={!messageInput.trim()}>Gönder</button>
-              </form>
-            </div>
-
-            <div className="controls-panel">
+              <div className="controls-panel">
                 <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
                 <button onClick={handleNext} className="control-btn next">Sıradaki</button>
                 <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
                 <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
                 <button onClick={sendBuzz} disabled={buzzCooldown} className="control-btn buzz">Titreşim Gönder</button>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </main>
     </div>
