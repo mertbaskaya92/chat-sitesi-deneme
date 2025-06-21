@@ -155,21 +155,26 @@ io.on('connection', (socket) => {
 
   // Mesaj gönderme
   socket.on('sendMessage', (data) => {
-    const partnerId = activeConnections.get(socket.id);
-    if (partnerId) {
-      io.to(partnerId).emit('newMessage', {
+    console.log(`[DEBUG] 'sendMessage' olayı alındı. Gönderen: ${socket.id}, Mesaj: "${data.message}"`);
+    const partnerSocketId = activeConnections.get(socket.id);
+    
+    if (partnerSocketId) {
+      console.log(`[DEBUG] Partner bulundu: ${partnerSocketId}. Mesaj iletiliyor...`);
+      io.to(partnerSocketId).emit('receiveMessage', { 
         message: data.message,
-        from: socket.id,
-        timestamp: new Date().toISOString()
+        senderId: socket.id
       });
+      console.log(`[DEBUG] Mesaj başarıyla ${partnerSocketId} ID'li partnere gönderildi.`);
+    } else {
+      console.log(`[DEBUG] HATA: Gönderen ${socket.id} için partner bulunamadı. activeConnections:`, JSON.stringify(Array.from(activeConnections.entries())));
     }
   });
 
   // Titreşim gönderme
   socket.on('sendBuzz', () => {
-    const partnerId = activeConnections.get(socket.id);
-    if (partnerId) {
-      io.to(partnerId).emit('receiveBuzz');
+    const partnerSocketId = activeConnections.get(socket.id);
+    if (partnerSocketId) {
+      io.to(partnerSocketId).emit('receiveBuzz');
     }
   });
 
