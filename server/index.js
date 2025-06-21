@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://your-vercel-app.vercel.app"],
+    origin: ["http://localhost:3000", "https://chat-sitesi-deneme.vercel.app"],
     methods: ["GET", "POST"]
   }
 });
