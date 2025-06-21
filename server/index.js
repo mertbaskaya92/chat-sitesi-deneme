@@ -8,6 +8,21 @@ const countryList = require('country-list');
 
 const app = express();
 const server = http.createServer(app);
+
+// Content Security Policy (CSP) Middleware'i ekle
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self' blob:; " + // socket.io için blob script'lerine izin ver
+    "style-src 'self' 'unsafe-inline'; " + // React'in inline stillerine izin ver
+    "font-src 'self' data:; " + // Yerel fontlara izin ver
+    "connect-src 'self' wss://chat-sitesi-deneme-backend.onrender.com; " + // Websocket bağlantısına izin ver
+    "img-src 'self' https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/ data:;" // Emoji resimlerine (CDN) izin ver
+  );
+  next();
+});
+
 const io = socketIo(server, {
   cors: {
     origin: ["http://localhost:3000", "https://chat-sitesi-deneme.vercel.app"],
