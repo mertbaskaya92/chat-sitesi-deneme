@@ -59,6 +59,7 @@ function App() {
   const [userCount, setUserCount] = useState(0);
   const [showBuzzNotification, setShowBuzzNotification] = useState(false);
   const [remoteVolume, setRemoteVolume] = useState(1);
+  const messagesListRef = useRef(null);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -68,6 +69,20 @@ function App() {
   const partnerRef = useRef(null);
   const nudgeSound = useRef(null);
   const emojiPickerRef = useRef();
+
+  const SERVER_URL = process.env.NODE_ENV === 'production' 
+    ? 'https://chat-sitesi-deneme-backend.onrender.com' 
+    : 'http://localhost:5000';
+
+  const scrollToBottom = () => {
+    if (messagesListRef.current) {
+        messagesListRef.current.scrollTop = messagesListRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const playNudgeSound = useCallback(() => {
     if (nudgeSound.current) {
@@ -120,7 +135,7 @@ function App() {
     searchActiveRef.current = true;
     setIsSearching(true);
     if (initialMessage) {
-      setMessages([{ text: initialMessage, from: 'system', timestamp: new Date().toISOString() }]);
+      setMessages([{ message: initialMessage, from: 'system', timestamp: new Date().toISOString() }]);
     } else {
       setMessages([]);
     }
@@ -178,7 +193,7 @@ function App() {
   }, [partner]);
   
   useEffect(() => {
-    socket.current = io('https://chat-sitesi-deneme-backend.onrender.com');
+    socket.current = io(SERVER_URL);
     nudgeSound.current = new Audio(nudgeSoundFile);
 
     const pcConfig = {
@@ -230,12 +245,21 @@ function App() {
     });
     socket.current.on('updateUserCount', setUserCount);
 
+    socket.current.on('receiveMessage', (data) => {
+        console.log('[CLIENT DEBUG] receiveMessage olayı alındı:', data);
+        setMessages(prev => [...prev, { 
+            message: data.message, 
+            senderId: data.senderId,
+            timestamp: new Date().toISOString() 
+        }]);
+    });
+
     socket.current.on('partnerFound', async (data) => {
       searchActiveRef.current = false;
       setIsSearching(false);
       setPartner(data.partnerId);
       setPartnerInfo(data.partnerInfo);
-      setMessages([{ text: `Partnerin bulundu! (${data.partnerInfo.countryName})`, from: 'system', timestamp: new Date().toISOString() }]);
+      setMessages([{ message: `Partnerin bulundu! (${data.partnerInfo.countryName})`, from: 'system', timestamp: new Date().toISOString() }]);
       
       const pc = initializePeerConnection();
 
@@ -282,10 +306,6 @@ function App() {
       }
     });
 
-    socket.current.on('newMessage', (data) => {
-      setMessages(prev => [...prev, data]);
-    });
-
     socket.current.on('receiveBuzz', () => {
       setIsShaking(true);
       setShowBuzzNotification(true);
@@ -315,11 +335,18 @@ function App() {
   const sendMessage = (e) => {
     e.preventDefault();
     if (messageInput.trim() && partner && socket.current) {
-      const messageData = { message: messageInput, from: 'me', timestamp: new Date().toISOString() };
-      setMessages(prev => [...prev, messageData]);
-      socket.current.emit('sendMessage', { message: messageInput });
-      setMessageInput('');
-      setShowEmojiPicker(false);
+        console.log(`[CLIENT DEBUG] Emitting 'sendMessage'. Partner: ${partner}, Socket ID: ${socket.current.id}`);
+        const messageData = { 
+            message: messageInput, 
+            senderId: socket.current.id,
+            timestamp: new Date().toISOString() 
+        };
+        setMessages(prev => [...prev, messageData]);
+        socket.current.emit('sendMessage', { message: messageInput });
+        setMessageInput('');
+        setShowEmojiPicker(false);
+    } else {
+      console.log(`[CLIENT DEBUG] sendMessage engellendi. Koşullar: Input dolu mu? ${!!messageInput.trim()}, Partner var mı? ${!!partner}, Socket bağlı mı? ${!!socket.current}`);
     }
   };
 
@@ -376,9 +403,7 @@ function App() {
   
   const getPartnerLabel = (info) => {
     if (!info) return 'Partner';
-    const name = info.countryName === 'Bilinmeyen' ? 'Yabancı' : info.countryName;
-    if (info.countryCode === 'XX' || !info.countryCode) return name;
-    return `${countryCodeToFlag(info.countryCode)} ${name}`;
+    return 'Yabancı';
   };
 
   const handleVolumeChange = (e) => {
@@ -413,16 +438,14 @@ function App() {
                 ) : (
                   <div className="video-placeholder"></div>
                 )}
-                {partner && (
-                  <div className="video-label-group">
-                      {partner && (
-                          <div className="video-label partner">
-                              {getPartnerLabel(partnerInfo)}
-                          </div>
-                      )}
-                      {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
-                  </div>
-                )}
+                <div className="video-label-group">
+                    {partner && (
+                        <div className="video-label partner">
+                            {getPartnerLabel(partnerInfo)}
+                        </div>
+                    )}
+                    {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
+                </div>
                 {partner && (
                     <div className="volume-control-container">
                         <i className="fa fa-volume-down"></i>
@@ -459,7 +482,7 @@ function App() {
 
             <div className="interaction-panel">
               <div className="chat-panel">
-                <div className="messages-list">
+                <div className="messages-list" ref={messagesListRef}>
                   {isSearching && !partner ? (
                     <div className="searching-in-chat">
                       <div className="loader"></div>
@@ -467,14 +490,28 @@ function App() {
                       <p className="searching-subtitle">Partner bekleniyor...</p>
                     </div>
                   ) : (
-                    messages.filter(msg => msg.from !== 'system').map((msg) => (
-                      <div key={msg.timestamp} className={`message-item ${msg.from}`}>
-                        <div className="message-content">
-                          <Twemoji text={msg.message} />
-                          <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    messages.map((msg, index) => {
+                      if (msg.from === 'system') {
+                        return (
+                          <div key={msg.timestamp || index} className="message-item system">
+                            <div className="message-content">
+                              <span>{msg.message}</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
+                      const messageClass = msg.senderId === socket.current?.id ? 'me' : 'partner';
+                      
+                      return (
+                        <div key={msg.timestamp || index} className={`message-item ${messageClass}`}>
+                          <div className="message-content">
+                            <Twemoji text={msg.message} />
+                            <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
 

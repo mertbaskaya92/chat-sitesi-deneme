@@ -320,52 +320,46 @@ html, body {
 }
 
 .message-item {
-  display: flex;
-  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .message-item.me {
+  display: flex;
   justify-content: flex-start;
 }
 
 .message-item.partner {
+  display: flex;
   justify-content: flex-end;
 }
 
 .message-item.system {
-  justify-content: flex-start;
-}
-
-.message-item.system .message-content {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255, 255, 255, 0.7);
   width: 100%;
-  text-align: center;
+  justify-content: flex-start;
+  font-style: normal;
 }
 
 .message-content {
-  padding: 10px 15px;
-  border-radius: 18px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
   max-width: 85%;
   position: relative;
   line-height: 1.4;
 }
 
 .message-item.me .message-content {
-  background: #3498db;
-  border-bottom-left-radius: 4px;
-  color: white;
+  background-color: rgba(0,0,0,0.2);
+  color: #fff;
 }
 
 .message-item.partner .message-content {
-  background: rgba(0,0,0,0.2);
-  border-bottom-right-radius: 4px;
+  background-color: #3498db;
+  color: #fff;
 }
 
 .message-timestamp {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 5px;
   text-align: right;
   display: block;
