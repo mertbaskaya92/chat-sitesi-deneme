@@ -17,8 +17,9 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "default-src": ["'self'"], // Varsayılan olarak sadece kendi kaynağından gelenlere izin ver
       "script-src-elem": ["'self'", "blob:"],
-      "connect-src": ["'self'", "https://chat-sitesi-deneme.onrender.com", "wss://chat-sitesi-deneme.onrender.com"],
+      "connect-src": ["'self'", "https://chat-sitesi-deneme-backend.onrender.com", "wss://chat-sitesi-deneme-backend.onrender.com"],
       "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/"],
       "style-src": ["'self'", "'unsafe-inline'"]
     }
@@ -34,6 +35,11 @@ const io = socketIo(server, {
 
 app.use(cors());
 app.use(express.json());
+
+// Sunucunun canlı olduğunu kontrol etmek için kök route
+app.get('/', (req, res) => {
+  res.status(200).send('Server is alive and running!');
+});
 
 // Kullanıcı yönetimi
 const waitingUsers = new Set();
