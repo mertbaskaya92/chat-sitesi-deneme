@@ -333,13 +333,42 @@ html, body {
 .message-form button.buzz {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+  width: 42px;
+  height: 42px;
+  box-sizing: border-box;
 }
+
+.message-form button.buzz::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
 .message-form button:hover:not(:disabled) {
   filter: brightness(1.2);
 }
-.message-form button:disabled {
+
+/* Genel disabled kuralını buzz butonu hariç tutacak şekilde düzenle */
+.message-form button:disabled:not(.buzz) {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* Titreşim butonu için özel disabled stili */
+.message-form button.buzz:disabled {
+  cursor: not-allowed;
+  opacity: 1; /* Opaklığı sıfırla */
+}
+
+/* Titreşim butonu devre dışıyken perde animasyonunu başlat */
+.message-form button.buzz:disabled::after {
+  animation: cooldown-wipe 5s ease-out forwards;
 }
 
 /* Controls Panel */
@@ -458,6 +487,16 @@ html, body {
     bottom: 70px;
     right: 1rem;
     z-index: 100;
+}
+
+/* Perde animasyonu */
+@keyframes cooldown-wipe {
+  from {
+    width: 100%; /* Perde tamamen kapalı başlar */
+  }
+  to {
+    width: 0%; /* Perde sağdan sola doğru açılarak kaybolur */
+  }
 }
 
 /* 22-inch (1920px) ve altı ekranlar için boyutlandırma */
