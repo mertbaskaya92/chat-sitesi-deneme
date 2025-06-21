@@ -22,7 +22,9 @@ app.use(helmet({
       "connect-src": [
         "'self'",
         "https://chat-sitesi-deneme-backend.onrender.com",
-        "wss://chat-sitesi-deneme-backend.onrender.com/",
+        "wss://chat-sitesi-deneme-backend.onrender.com",
+        "https://chat-sitesi-deneme.vercel.app",
+        "wss://chat-sitesi-deneme.vercel.app",
         "https://www.google-analytics.com",
         "https://overbridgenet.com"
       ],
