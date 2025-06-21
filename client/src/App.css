@@ -283,7 +283,7 @@ html, body {
 }
 
 .message-form input {
-  flex: 1;
+  width: 100%;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid transparent;
   border-radius: 20px;
@@ -339,11 +339,24 @@ html, body {
   margin-top: 1rem;
 }
 .secondary-controls {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
   display: flex;
-  gap: 10px;
-  margin-top: 1rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 1rem;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px;
+  border-radius: 50px;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.video-container.local:hover .secondary-controls,
+.secondary-controls.has-active-controls {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .control-btn {
@@ -360,9 +373,42 @@ html, body {
 
 .control-btn.disconnect { background: #e74c3c; }
 .control-btn.next { background: #27ae60; }
-.secondary-controls .control-btn { background: rgba(0,0,0,0.2); }
+.secondary-controls .control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .secondary-controls .control-btn.active {
-  background: #3498db;
+  background: #e74c3c;
+}
+.secondary-controls .control-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Custom icon for slashed video camera */
+.fa-video-camera-slash {
+  position: relative;
+}
+
+.fa-video-camera-slash::before {
+  content: "\f03d";
+}
+.fa-video-camera-slash::after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 120%;
+  height: 2px;
+  background: white;
+  left: -10%;
+  top: 50%;
+  transform: translateY(-50%) rotate(-45deg);
 }
 
 /* Other styles */
@@ -391,7 +437,7 @@ html, body {
 
 .emoji-picker-container {
     position: absolute;
-    bottom: 70px; /* Adjust based on form height */
+    bottom: 70px;
     right: 1rem;
     z-index: 100;
 } 

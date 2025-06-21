@@ -401,6 +401,14 @@ function App() {
               <div className="video-container local">
                 <video ref={localVideoRef} autoPlay muted playsInline></video>
                 <div className="video-label you">Siz</div>
+                <div className={`secondary-controls ${isMuted || isVideoOff ? 'has-active-controls' : ''}`}>
+                    <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>
+                      <i className={`fa ${isMuted ? 'fa-microphone-slash' : 'fa-microphone'}`}></i>
+                    </button>
+                    <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>
+                      <i className={`fa ${isVideoOff ? 'fa-video-camera-slash' : 'fa-video-camera'}`}></i>
+                    </button>
+                </div>
               </div>
               <div className="controls-panel">
                 <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
@@ -444,12 +452,10 @@ function App() {
                     disabled={!partner}
                   />
                   <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className="control-btn buzz">⚡</button>
-                  <button type="submit" disabled={!messageInput.trim() || !partner}>Gönder</button>
+                  <button type="submit" disabled={!messageInput.trim() || !partner}>
+                    <i className="fa fa-paper-plane"></i>
+                  </button>
                 </form>
-              </div>
-              <div className="secondary-controls">
-                <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
-                <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
               </div>
             </div>
           </div>
