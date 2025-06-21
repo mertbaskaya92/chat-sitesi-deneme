@@ -343,25 +343,23 @@ function App() {
       {showBuzzNotification && <div className="buzz-notification">Titreşim aldınız!</div>}
       
       <main className="App-main">
-        {!partner && !isSearching && <WelcomeScreen onFindPartner={handleFindPartnerClick} />}
-        
-        {isSearching && !partner && (
-          <div className="searching-container">
-            <div className="loader"></div>
-            <h2>Eşleştirme Aranıyor...</h2>
-            <button onClick={handleCancelSearch} className="cancel-btn">İptal</button>
-          </div>
-        )}
-
-        {partner && (
+        {(!isSearching && !partner) ? (
+          <WelcomeScreen onFindPartner={handleFindPartnerClick} />
+        ) : (
           <div className="session-view">
             <div className="video-area">
               <div className="video-container remote">
-                <video ref={remoteVideoRef} autoPlay playsInline></video>
-                <div className="video-label partner">
-                  {partnerInfo ? `${countryCodeToFlag(partnerInfo.countryCode)} ${partnerInfo.countryName}` : 'Partner'}
-                </div>
-                {isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
+                {partner ? (
+                  <video ref={remoteVideoRef} autoPlay playsInline></video>
+                ) : (
+                  <div className="video-placeholder"></div>
+                )}
+                {partner && (
+                  <div className="video-label partner">
+                    {partnerInfo ? `${countryCodeToFlag(partnerInfo.countryCode)} ${partnerInfo.countryName}` : 'Partner'}
+                  </div>
+                )}
+                {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
               </div>
               <div className="video-container local">
                 <video ref={localVideoRef} autoPlay muted playsInline></video>
@@ -372,14 +370,21 @@ function App() {
             <div className="interaction-panel">
               <div className="chat-panel">
                 <div className="messages-list">
-                  {messages.map((msg, index) => (
-                    <div key={index} className={`message-item ${msg.from}`}>
-                      <div className="message-content">
-                        <Twemoji text={msg.message} />
-                        <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                      </div>
+                  {isSearching && !partner ? (
+                    <div className="searching-in-chat">
+                      <div className="loader"></div>
+                      <h2>Eşleştirme Aranıyor...</h2>
                     </div>
-                  ))}
+                  ) : (
+                    messages.map((msg, index) => (
+                      <div key={index} className={`message-item ${msg.from}`}>
+                        <div className="message-content">
+                          <Twemoji text={msg.message} />
+                          <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 {showEmojiPicker && (
@@ -389,24 +394,25 @@ function App() {
                 )}
 
                 <form onSubmit={sendMessage} className="message-form">
-                  <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="emoji-btn">😊</button>
+                  <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="emoji-btn" disabled={!partner}>😊</button>
                   <input
                     type="text"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    placeholder="Mesajınızı yazın..."
+                    placeholder={partner ? "Mesajınızı yazın..." : "Partner bekleniyor..."}
                     autoComplete="off"
+                    disabled={!partner}
                   />
-                  <button type="submit" disabled={!messageInput.trim()}>Gönder</button>
+                  <button type="submit" disabled={!messageInput.trim() || !partner}>Gönder</button>
                 </form>
               </div>
 
               <div className="controls-panel">
-                <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
-                <button onClick={handleNext} className="control-btn next">Sıradaki</button>
-                <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
-                <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
-                <button onClick={sendBuzz} disabled={buzzCooldown} className="control-btn buzz">Titreşim Gönder</button>
+                  <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
+                  <button onClick={handleNext} className="control-btn next" disabled={!partner}>Sıradaki</button>
+                  <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
+                  <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
+                  <button onClick={sendBuzz} disabled={buzzCooldown || !partner} className="control-btn buzz">Titreşim Gönder</button>
               </div>
             </div>
           </div>
