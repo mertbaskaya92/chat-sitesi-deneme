@@ -380,7 +380,7 @@ function App() {
   };
 
   return (
-    <div className={`App ${isShaking ? 'shake' : ''}`}>
+    <div className="App">
       <header className="App-header">
         <h1>Görüntülü Sohbet</h1>
         <div className="connection-status">
