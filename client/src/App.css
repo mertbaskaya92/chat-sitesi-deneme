@@ -251,6 +251,12 @@ html, body {
   font-weight: 500;
 }
 
+.video-label.you {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
 .interaction-panel {
   display: flex;
   flex-direction: column;
