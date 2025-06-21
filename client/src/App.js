@@ -463,7 +463,7 @@ function App() {
                     autoComplete="off"
                     disabled={!partner}
                   />
-                  <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className="control-btn buzz">⚡</button>
+                  <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className="buzz">⚡</button>
                   <button type="submit" disabled={!messageInput.trim() || !partner}>
                     <i className="fa fa-paper-plane"></i>
                   </button>
