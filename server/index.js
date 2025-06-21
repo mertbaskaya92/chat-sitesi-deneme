@@ -18,7 +18,7 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       "default-src": ["'self'"], // Varsayılan olarak sadece kendi kaynağından gelenlere izin ver
-      "script-src-elem": ["'self'", "blob:"],
+      "script-src-elem": ["'self'", "blob:", "https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js.gz"],
       "connect-src": ["'self'", "https://chat-sitesi-deneme-backend.onrender.com", "wss://chat-sitesi-deneme-backend.onrender.com"],
       "img-src": ["'self'", "data:", "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/"],
       "style-src": ["'self'", "'unsafe-inline'"]
