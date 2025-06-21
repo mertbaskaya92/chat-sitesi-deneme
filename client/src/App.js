@@ -365,6 +365,10 @@ function App() {
                 <video ref={localVideoRef} autoPlay muted playsInline></video>
                 <div className="video-label you">Siz</div>
               </div>
+              <div className="controls-panel">
+                <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
+                <button onClick={handleNext} className="control-btn next" disabled={!partner}>Sıradaki</button>
+              </div>
             </div>
 
             <div className="interaction-panel">
@@ -394,7 +398,6 @@ function App() {
                 )}
 
                 <form onSubmit={sendMessage} className="message-form">
-                  <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="emoji-btn" disabled={!partner}>😊</button>
                   <input
                     type="text"
                     value={messageInput}
@@ -403,16 +406,13 @@ function App() {
                     autoComplete="off"
                     disabled={!partner}
                   />
+                  <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className="control-btn buzz">⚡</button>
                   <button type="submit" disabled={!messageInput.trim() || !partner}>Gönder</button>
                 </form>
               </div>
-
-              <div className="controls-panel">
-                  <button onClick={handleDisconnect} className="control-btn disconnect">Sonlandır</button>
-                  <button onClick={handleNext} className="control-btn next" disabled={!partner}>Sıradaki</button>
-                  <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
-                  <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
-                  <button onClick={sendBuzz} disabled={buzzCooldown || !partner} className="control-btn buzz">Titreşim Gönder</button>
+              <div className="secondary-controls">
+                <button onClick={toggleMute} className={`control-btn ${isMuted ? 'active' : ''}`}>{isMuted ? 'Sesi Aç' : 'Sessize Al'}</button>
+                <button onClick={toggleVideo} className={`control-btn ${isVideoOff ? 'active' : ''}`}>{isVideoOff ? 'Kamerayı Aç' : 'Kamerayı Kapat'}</button>
               </div>
             </div>
           </div>
