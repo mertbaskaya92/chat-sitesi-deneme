@@ -428,7 +428,11 @@ function App() {
                     messages.map((msg) => (
                       <div key={msg.timestamp} className={`message-item ${msg.from}`}>
                         <div className="message-content">
-                          <Twemoji text={msg.message} />
+                          {msg.from === 'system' ? (
+                            <div className="message-text-inner">{msg.message}</div>
+                          ) : (
+                            <Twemoji text={msg.message} />
+                          )}
                           <div className="message-timestamp">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </div>
                       </div>
