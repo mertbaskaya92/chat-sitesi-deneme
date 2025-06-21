@@ -167,7 +167,6 @@ function App() {
   }, [partner]);
   
   useEffect(() => {
-    // Sadece bir kere çalışacak ana useEffect
     socket.current = io('https://chat-sitesi-deneme-backend.onrender.com');
     nudgeSound.current = new Audio(nudgeSoundFile);
 
@@ -271,7 +270,8 @@ function App() {
       }
       handleDisconnectFlow();
     };
-  }, [handleDisconnectFlow, findPartner, playNudgeSound, handleNext, cleanupPeerConnection, handleCancelSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -310,7 +310,7 @@ function App() {
     if (partner && socket.current && !buzzCooldown) {
       socket.current.emit('sendBuzz');
       setBuzzCooldown(true);
-      setTimeout(() => setBuzzCooldown(false), 5000); // 5 saniye bekleme süresi
+      setTimeout(() => setBuzzCooldown(false), 5000);
     }
   };
   
