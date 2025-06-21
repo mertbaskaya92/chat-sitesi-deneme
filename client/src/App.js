@@ -22,7 +22,7 @@ const WelcomeScreen = ({ onFindPartner }) => (
 );
 
 // YENİ: Emoji'leri resim olarak render eden yardımcı bileşen
-const EmojiMessage = ({ text }) => {
+const Twemoji = ({ text }) => {
   const createMarkup = () => ({
     __html: twemoji.parse(text, {
       folder: '72x72',
@@ -32,27 +32,6 @@ const EmojiMessage = ({ text }) => {
     })
   });
   return <div className="message-text-inner" dangerouslySetInnerHTML={createMarkup()} />;
-};
-
-const createEmojiMarkup = (text) => ({
-  __html: twemoji.parse(text, {
-    folder: '72x72',
-    ext: '.png',
-    className: 'emoji-img',
-    base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/'
-  })
-});
-
-const Twemoji = ({ text }) => {
-  const markup = {
-    __html: twemoji.parse(text || '', {
-      folder: 'svg',
-      ext: '.svg',
-      className: 'emoji-img',
-      base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/assets/'
-    })
-  };
-  return <span dangerouslySetInnerHTML={markup} />;
 };
 
 function App() {
@@ -74,7 +53,6 @@ function App() {
   const [userCount, setUserCount] = useState(0);
   const [showEmojiSuggestions, setShowEmojiSuggestions] = useState(false);
   const [nudgeDuration, setNudgeDuration] = useState(500);
-  const [isPartnerVideoBlurred, setIsPartnerVideoBlurred] = useState(false);
   const [showBuzzNotification, setShowBuzzNotification] = useState(false);
 
   const localVideoRef = useRef(null);
@@ -88,7 +66,6 @@ function App() {
 
   const emojiPickerRef = useRef();
   const messageInputRef = useRef();
-  const nudgeSoundRef = useRef();
 
   const playNudgeSound = useCallback(() => {
     if (nudgeSound) {
@@ -379,7 +356,7 @@ function App() {
     });
 
     return () => socket.current.close();
-  }, [cleanupPeerConnection, findPartner, handleCancelSearch]);
+  }, [cleanupPeerConnection, findPartner, handleCancelSearch, nudgeDuration, playNudgeSound]);
 
   const sendMessage = (e) => {
     e.preventDefault();
