@@ -58,6 +58,7 @@ function App() {
   const [buzzCooldown, setBuzzCooldown] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const [showBuzzNotification, setShowBuzzNotification] = useState(false);
+  const [remoteVolume, setRemoteVolume] = useState(1);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -201,6 +202,7 @@ function App() {
       pc.ontrack = (event) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
+          remoteVideoRef.current.volume = remoteVolume;
           setRemoteVideoMuted(event.streams[0].getAudioTracks()[0]?.enabled === false);
         }
       };
@@ -379,6 +381,14 @@ function App() {
     return `${countryCodeToFlag(info.countryCode)} ${name}`;
   };
 
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setRemoteVolume(newVolume);
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.volume = newVolume;
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -404,11 +414,30 @@ function App() {
                   <div className="video-placeholder"></div>
                 )}
                 {partner && (
-                  <div className="video-label partner">
-                    {getPartnerLabel(partnerInfo)}
+                  <div className="video-label-group">
+                      {partner && (
+                          <div className="video-label partner">
+                              {getPartnerLabel(partnerInfo)}
+                          </div>
+                      )}
+                      {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
                   </div>
                 )}
-                {partner && isRemoteVideoMuted && <div className="remote-muted-icon"><i className="fa fa-microphone-slash"></i></div>}
+                {partner && (
+                    <div className="volume-control-container">
+                        <i className="fa fa-volume-down"></i>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value={remoteVolume}
+                            onChange={handleVolumeChange}
+                            className="volume-slider"
+                        />
+                        <i className="fa fa-volume-up"></i>
+                    </div>
+                )}
               </div>
               <div className="video-container local">
                 <video ref={localVideoRef} autoPlay muted playsInline></video>
