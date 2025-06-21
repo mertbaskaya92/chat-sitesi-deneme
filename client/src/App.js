@@ -174,22 +174,40 @@ function App() {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
 
-    const createPeerConnection = () => {
+    const initializePeerConnection = () => {
+      if (peerConnectionRef.current) {
+        console.warn("Mevcut peer connection zaten var. Yenisi oluşturulmuyor.");
+        return peerConnectionRef.current;
+      }
+      
       const pc = new RTCPeerConnection(pcConfig);
+
       pc.onicecandidate = (event) => {
         if (event.candidate && socket.current) {
           socket.current.emit('iceCandidate', { candidate: event.candidate });
         }
       };
+
       pc.ontrack = (event) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
           setRemoteVideoMuted(event.streams[0].getAudioTracks()[0]?.enabled === false);
         }
       };
+
       if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach(track => pc.addTrack(track, localStreamRef.current));
+        localStreamRef.current.getTracks().forEach(track => {
+          try {
+            pc.addTrack(track, localStreamRef.current);
+          } catch (e) {
+            console.error("Track eklenirken hata:", e);
+          }
+        });
+      } else {
+        console.error("Yerel stream (kamera/mikrofon) bulunamadığı için track eklenemedi.");
       }
+      
+      peerConnectionRef.current = pc;
       return pc;
     };
 
@@ -207,34 +225,48 @@ function App() {
       setPartnerInfo(data.partnerInfo);
       setMessages([{ text: `Partnerin bulundu! (${data.partnerInfo.countryName})`, from: 'system', timestamp: new Date().toISOString() }]);
       
-      peerConnectionRef.current = createPeerConnection();
+      const pc = initializePeerConnection();
 
       if (data.initiator) {
-        const offer = await peerConnectionRef.current.createOffer();
-        await peerConnectionRef.current.setLocalDescription(offer);
-        socket.current.emit('offer', { offer });
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.current.emit('offer', { offer });
+        } catch(e) {
+            console.error("Offer oluşturma/set etme hatası:", e);
+        }
       }
     });
 
     socket.current.on('offer', async (data) => {
-      if (!peerConnectionRef.current) {
-        peerConnectionRef.current = createPeerConnection();
+      const pc = initializePeerConnection();
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.current.emit('answer', { answer });
+      } catch(e) {
+          console.error("Answer oluşturma/set etme hatası:", e);
       }
-      await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data.offer));
-      const answer = await peerConnectionRef.current.createAnswer();
-      await peerConnectionRef.current.setLocalDescription(answer);
-      socket.current.emit('answer', { answer });
     });
 
     socket.current.on('answer', async (data) => {
-      if (peerConnectionRef.current?.signalingState !== 'stable') {
-        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+      if (peerConnectionRef.current && peerConnectionRef.current.signalingState !== 'stable') {
+        try {
+          await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+        } catch (e) {
+          console.error("Remote description (answer) set etme hatası:", e);
+        }
       }
     });
 
     socket.current.on('iceCandidate', (data) => {
-      if (peerConnectionRef.current) {
-        peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+      if (peerConnectionRef.current && data.candidate) {
+        try {
+          peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+        } catch (e) {
+          console.error("ICE adayı eklenirken hata:", e);
+        }
       }
     });
 
