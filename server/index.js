@@ -87,9 +87,14 @@ io.on('connection', (socket) => {
   socket.on('findPartner', () => {
     console.log(`${socket.id} eşleştirme arıyor`);
     
-    if (waitingUsers.size > 0) {
+    // Kendisiyle eşleşmesini engelle
+    waitingUsers.delete(socket.id);
+
+    const availableUsers = Array.from(waitingUsers);
+
+    if (availableUsers.length > 0) {
       // Bekleyen kullanıcı varsa eşleştir
-      const partnerId = waitingUsers.values().next().value;
+      const partnerId = availableUsers[0];
       waitingUsers.delete(partnerId);
       
       activeConnections.set(socket.id, partnerId);
