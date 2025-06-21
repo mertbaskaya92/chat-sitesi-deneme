@@ -337,6 +337,10 @@ html, body {
   overflow: hidden;
 }
 
+.message-form button.buzz .fa-bolt {
+  color: gold;
+}
+
 .message-form button.buzz::after {
   content: '';
   position: absolute;
