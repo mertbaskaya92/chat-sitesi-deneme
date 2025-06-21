@@ -234,6 +234,13 @@ html, body {
   font-weight: 500;
 }
 
+.searching-in-chat .searching-subtitle {
+  font-weight: 300;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: -0.5rem;
+}
+
 .message-item {
   display: flex;
   width: 100%;
@@ -361,14 +368,20 @@ html, body {
   cursor: not-allowed;
 }
 
-/* Titreşim butonu için özel disabled stili */
+/* Titreşim butonu için genel disabled stili (örn. partner yokken) */
 .message-form button.buzz:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
-  opacity: 1; /* Opaklığı sıfırla */
 }
 
-/* Titreşim butonu devre dışıyken perde animasyonunu başlat */
-.message-form button.buzz:disabled::after {
+/* Cooldown durumunda opaklığı tekrar 1 yap */
+.message-form button.buzz.cooldown {
+  opacity: 1; 
+  cursor: not-allowed;
+}
+
+/* Sadece cooldown durumunda perde animasyonunu başlat */
+.message-form button.buzz.cooldown::after {
   animation: cooldown-wipe 5s ease-out forwards;
 }
 

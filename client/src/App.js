@@ -435,6 +435,7 @@ function App() {
                     <div className="searching-in-chat">
                       <div className="loader"></div>
                       <h2>Eşleştirme Aranıyor...</h2>
+                      <p className="searching-subtitle">Partner bekleniyor...</p>
                     </div>
                   ) : (
                     messages.filter(msg => msg.from !== 'system').map((msg) => (
@@ -459,11 +460,11 @@ function App() {
                     type="text"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    placeholder={partner ? "Mesajınızı yazın..." : "Partner bekleniyor..."}
+                    placeholder={partner ? "Mesajınızı yazın..." : ""}
                     autoComplete="off"
                     disabled={!partner}
                   />
-                  <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className="buzz">
+                  <button type="button" onClick={sendBuzz} disabled={buzzCooldown || !partner} className={`buzz ${buzzCooldown ? 'cooldown' : ''}`}>
                     <i className="fa fa-bolt"></i>
                   </button>
                   <button type="submit" disabled={!messageInput.trim() || !partner}>
