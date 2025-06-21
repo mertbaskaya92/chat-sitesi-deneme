@@ -288,7 +288,7 @@ function App() {
       setIsShaking(true);
       setShowBuzzNotification(true);
       playNudgeSound();
-      setTimeout(() => setIsShaking(false), 500);
+      setTimeout(() => setIsShaking(false), 820);
       setTimeout(() => setShowBuzzNotification(false), 3000);
     });
     
@@ -346,6 +346,11 @@ function App() {
   const sendBuzz = () => {
     if (partner && socket.current && !buzzCooldown) {
       socket.current.emit('sendBuzz');
+      
+      setIsShaking(true);
+      playNudgeSound();
+      setTimeout(() => setIsShaking(false), 820);
+
       setBuzzCooldown(true);
       setTimeout(() => setBuzzCooldown(false), 5000);
     }
@@ -390,7 +395,7 @@ function App() {
         {(!isSearching && !partner) ? (
           <WelcomeScreen onFindPartner={handleFindPartnerClick} />
         ) : (
-          <div className="session-view">
+          <div className={`session-view ${isShaking ? 'shake' : ''}`}>
             <div className="video-area">
               <div className="video-container remote">
                 {partner ? (
