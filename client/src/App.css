@@ -136,8 +136,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  min-width: 0;
-  width: 50%;
+  width: 30%;
 }
 
 .video-container {
@@ -147,6 +146,7 @@ html, body {
   overflow: hidden;
   width: 100%;
   flex: 1;
+  min-height: 0;
 }
 
 .video-container.remote, .video-container.local {
@@ -258,35 +258,25 @@ html, body {
 }
 
 .interaction-panel {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
+  width: 70%;
 }
 
 .chat-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 1rem;
+  height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .messages-list {
-  flex: 1;
   overflow-y: auto;
   padding-right: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  flex: 1;
 }
+
 .messages-list::-webkit-scrollbar {
   display: none;
 }
