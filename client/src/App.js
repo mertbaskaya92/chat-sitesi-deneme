@@ -20,15 +20,25 @@ const WelcomeScreen = ({ onFindPartner }) => (
 );
 
 const Twemoji = ({ text }) => {
-  const createMarkup = () => ({
-    __html: twemoji.parse(text, {
-      folder: '72x72',
-      ext: '.png',
-      className: 'emoji-img',
-      base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/'
-    })
-  });
-  return <div className="message-text-inner" dangerouslySetInnerHTML={createMarkup()} />;
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      // Önceki içeriği temizle
+      containerRef.current.innerHTML = '';
+      
+      // Yeni içeriği parse edip ekle
+      const parsedHtml = twemoji.parse(text, {
+        folder: '72x72',
+        ext: '.png',
+        className: 'emoji-img',
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/'
+      });
+      containerRef.current.innerHTML = parsedHtml;
+    }
+  }, [text]); // Sadece text değiştiğinde çalış
+
+  return <div className="message-text-inner" ref={containerRef} />;
 };
 
 function App() {
