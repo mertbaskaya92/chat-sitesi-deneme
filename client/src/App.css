@@ -187,6 +187,7 @@ html, body {
 }
 
 .chat-panel {
+  flex: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -205,6 +206,11 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.messages-list::-webkit-scrollbar {
+  display: none;
 }
 
 .searching-in-chat {
@@ -452,4 +458,12 @@ html, body {
     bottom: 70px;
     right: 1rem;
     z-index: 100;
+}
+
+/* 22-inch (1920px) ve altı ekranlar için boyutlandırma */
+@media (max-width: 1920px) {
+  .session-view {
+    width: 75%;
+    height: 85%;
+  }
 } 
