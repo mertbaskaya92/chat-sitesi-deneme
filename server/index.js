@@ -102,19 +102,18 @@ io.on('connection', (socket) => {
       
       console.log(`${socket.id} (${userData.countryCode}) ve ${partnerId} (${partnerData.countryCode}) eşleştirildi`);
     } else {
-      // Kimse beklemiyorsa, bu kullanıcıyı bekleme listesine ekle ve zamanlayıcı başlat
+      // Kimse beklemiyorsa, bu kullanıcıyı bekleme listesine ekle
       waitingUsers.add(socket.id);
       socket.emit('waitingForPartner');
       console.log(`${socket.id} bekleme listesine eklendi.`);
+    }
+  });
 
-      // Zaman aşımı: Belirtilen süre içinde eşleşme olmazsa kullanıcıya haber ver
-      setTimeout(() => {
-        if (waitingUsers.has(socket.id)) {
-          waitingUsers.delete(socket.id);
-          socket.emit('noPartnerFoundInTime');
-          console.log(`${socket.id} için eşleşme zaman aşımı.`);
-        }
-      }, 15000); // 15 saniye bekleme süresi
+  // 'cancelSearch' olayı için dinleyici
+  socket.on('cancelSearch', () => {
+    if (waitingUsers.has(socket.id)) {
+      waitingUsers.delete(socket.id);
+      console.log(`${socket.id} aramayı iptal etti.`);
     }
   });
 

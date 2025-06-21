@@ -250,11 +250,6 @@ function App() {
       setTimeout(() => setShowBuzzNotification(false), 3000);
     });
     
-    socket.current.on('noPartnerFoundInTime', () => {
-      alert("Yeterli süre içinde eşleşme bulunamadı. Lütfen daha sonra tekrar deneyin.");
-      handleCancelSearch();
-    });
-
     socket.current.on('partnerDisconnected', () => {
       handleNext();
     });
